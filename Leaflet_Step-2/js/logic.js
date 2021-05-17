@@ -73,7 +73,7 @@ d3.json(tectonicUrl).then(function(infoTec) {
 	};
 });
 
-	function getColor(d) {
+function getColor(d) {
     return d >= 5 ? "rgb(240, 107, 107)" :
            d >= 4 ? "rgb(240, 167, 107)" :
            d >= 3 ? "rgb(243, 186, 77)" :
