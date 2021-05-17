@@ -18,7 +18,10 @@ Create a map using Leaflet that plots all the earthquakes from an earthquake dat
 The USGS provides earthquake data in a number of different formats, updated every 5 minutes. Visit the [USGS GeoJSON Feed](http://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php)
 
 ## Screenshots
+Step 1
 ![](Captura.JPG)
+Step2
+![](Captura2.JPG)
 
 ## Technologies
 * Tech 1 – Leaflet
