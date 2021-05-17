@@ -82,30 +82,35 @@ d3.json(tectonicUrl).then(function(infoTec) {
 					 					"rgb(183, 243, 77)";
 	}
 
-	var features = data.features;
-	for (var i = 0; i < features.length; i++) {
+	d3.json(earthquakeUrl).then(function(infoEarth) {
+		var earthFeatures = infoEarth.features;
+
+		for (var i = 0; i < earthFeatures.length; i++) {
 		
 		var magnitudes = features[i].properties.mag;
 		var coordinates = features[i].geometry.coordinates;
 
-        L.circle(
+		var circleMarkers = L.circle(
 			[coordinates[1], coordinates[0]], {
-				fillOpacity: 0.75,
+				fillOpacity: 0.9,
 				fillColor: getColor(magnitudes),
-				color: "black",
-				weight: 0.5,
-				radius: magnitudes * 15000
-			}).bindPopup("<h3>" + features[i].properties.place +
-				"</h3><hr><p>" + new Date(features[i].properties.time) + 
-				'<br>' + '[' + coordinates[1] + ', ' + coordinates[0] + ']' + "</p>").addTo(myMap);
-	};	
+				color: getColor(magnitudes),
+				stroke: false,
+				radius: magnitudes * 17000
+			});
 
-	var legend = L.control({position: 'bottomright'});
-	legend.onAdd = function () {
-	
-		var div = L.DomUtil.create('div', 'info legend'),
-			grades = [0, 1, 2, 3, 4, 5],
-			labels = [];
+			circleMarkers.addTo(layers.EARTHQUAKES);
+			circleMarkers.bindPopup("<h3>" + earthFeatures[i].properties.place +
+			"</h3><hr><p>" + new Date(earthFeatures[i].properties.time) + 
+			'<br>' + '[' + coordinates[1] + ', ' + coordinates[0] + ']' + "</p>");
+};
+});
+
+var legend = L.control({position: 'bottomright'});
+legend.onAdd = function () {
+
+	var div = L.DomUtil.create('div', 'info legend'),
+		grades = [0, 1, 2, 3, 4, 5];
 
 		for (var i = 0; i < grades.length; i++) {
 			div.innerHTML +=
@@ -115,4 +120,3 @@ d3.json(tectonicUrl).then(function(infoTec) {
 		return div;
 	};
 	legend.addTo(myMap);
-});
