@@ -39,6 +39,40 @@ var baseMaps = {
 	]
 });
 
+satellite.addTo(myMap);
+
+var overlayMaps = {
+	"Fault Lines": layers.TECTONIC_LINE,
+  "Earthquakes": layers.EARTHQUAKES
+};
+
+L.control.layers(baseMaps, overlayMaps, {
+	collapsed: false
+  }).addTo(myMap);
+
+  var tectonicUrl = "https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json";
+var earthquakeUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
+
+d3.json(tectonicUrl).then(function(infoTec) {
+
+	var tecFeatures = infoTec.features;
+
+	for (var i = 0; i < tecFeatures.length; i++) {
+
+		var coordinates = tecFeatures[i].geometry.coordinates;
+
+		var orderedCoordinates = [];
+
+		orderedCoordinates.push(
+			coordinates.map(coordinate => [coordinate[1], coordinate[0]])
+		);
+
+		var lines = L.polyline(orderedCoordinates, {color: "rgb(255, 165, 0)"});
+
+		lines.addTo(layers.TECTONIC_LINE);
+	};
+});
+
 	function getColor(d) {
     return d >= 5 ? "rgb(240, 107, 107)" :
            d >= 4 ? "rgb(240, 167, 107)" :
