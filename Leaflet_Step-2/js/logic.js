@@ -20,17 +20,17 @@ var outdoors = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/{
 });
 
 var baseMaps = {
-	"Satellite": satellite,
-	  "Grayscale": grayscale,
-	  "Outdoors": outdoors
-  };
-  
-  var layers = {
-	TECTONIC_LINE: new L.LayerGroup(),
-	EARTHQUAKES: new L.LayerGroup()
-  };
+  "Satellite": satellite,
+	"Grayscale": grayscale,
+	"Outdoors": outdoors
+};
 
-  var myMap = L.map("map", {
+var layers = {
+  TECTONIC_LINE: new L.LayerGroup(),
+  EARTHQUAKES: new L.LayerGroup()
+};
+
+var myMap = L.map("map", {
 	center: [23.6978, 120.9605],
 	zoom: 4,
   layers: [
@@ -47,11 +47,12 @@ var overlayMaps = {
 };
 
 L.control.layers(baseMaps, overlayMaps, {
-	collapsed: false
-  }).addTo(myMap);
+  collapsed: false
+}).addTo(myMap);
 
-  var tectonicUrl = "https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json";
+var tectonicUrl = "https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json";
 var earthquakeUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
+
 
 d3.json(tectonicUrl).then(function(infoTec) {
 
@@ -68,10 +69,11 @@ d3.json(tectonicUrl).then(function(infoTec) {
 		);
 
 		var lines = L.polyline(orderedCoordinates, {color: "rgb(255, 165, 0)"});
-
+		
 		lines.addTo(layers.TECTONIC_LINE);
 	};
 });
+
 
 function getColor(d) {
     return d >= 5 ? "rgb(240, 107, 107)" :
@@ -80,30 +82,33 @@ function getColor(d) {
 					 d >= 2 ? "rgb(243, 219, 77)" :
 					 d >= 1 ? "rgb(225, 243, 77)" :
 					 					"rgb(183, 243, 77)";
-	}
+};
 
-	d3.json(earthquakeUrl).then(function(infoEarth) {
-		var earthFeatures = infoEarth.features;
 
-		for (var i = 0; i < earthFeatures.length; i++) {
+d3.json(earthquakeUrl).then(function(infoEarth) {
+	
+	var earthFeatures = infoEarth.features;
+
+	for (var i = 0; i < earthFeatures.length; i++) {
 		
-		var magnitudes = features[i].properties.mag;
-		var coordinates = features[i].geometry.coordinates;
+		var magnitudes = earthFeatures[i].properties.mag;
+		var coordinates = earthFeatures[i].geometry.coordinates;
 
 		var circleMarkers = L.circle(
-			[coordinates[1], coordinates[0]], {
-				fillOpacity: 0.9,
-				fillColor: getColor(magnitudes),
-				color: getColor(magnitudes),
-				stroke: false,
-				radius: magnitudes * 17000
-			});
+													[coordinates[1], coordinates[0]], {
+														fillOpacity: 0.9,
+														fillColor: getColor(magnitudes),
+														color: getColor(magnitudes),
+														stroke: false,
+														radius: magnitudes * 17000
+													});
 
-			circleMarkers.addTo(layers.EARTHQUAKES);
-			circleMarkers.bindPopup("<h3>" + earthFeatures[i].properties.place +
-			"</h3><hr><p>" + new Date(earthFeatures[i].properties.time) + 
-			'<br>' + '[' + coordinates[1] + ', ' + coordinates[0] + ']' + "</p>");
-};
+		circleMarkers.addTo(layers.EARTHQUAKES);
+
+		circleMarkers.bindPopup("<h3>" + earthFeatures[i].properties.place +
+										"</h3><hr><p>" + new Date(earthFeatures[i].properties.time) + 
+										'<br>' + '[' + coordinates[1] + ', ' + coordinates[0] + ']' + "</p>");
+	};
 });
 
 var legend = L.control({position: 'bottomright'});
@@ -112,11 +117,11 @@ legend.onAdd = function () {
 	var div = L.DomUtil.create('div', 'info legend'),
 		grades = [0, 1, 2, 3, 4, 5];
 
-		for (var i = 0; i < grades.length; i++) {
-			div.innerHTML +=
-				'<i style="background:' + getColor(grades[i]) + '"></i> ' +
-				grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
-		}
-		return div;
-	};
-	legend.addTo(myMap);
+	for (var i = 0; i < grades.length; i++) {
+		div.innerHTML +=
+			'<i style="background:' + getColor(grades[i]) + '"></i> ' +
+			grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+	}
+	return div;
+};
+legend.addTo(myMap);
